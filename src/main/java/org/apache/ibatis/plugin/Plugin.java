@@ -40,6 +40,15 @@ public class Plugin implements InvocationHandler {
     this.signatureMap = signatureMap;
   }
 
+    /**
+     * 返回代理类
+     * target 及父类未实现任何接口的话，返回 target 自身；
+     * target 及父类实现的接口没有要拦截的方法时，返回 target 自身；
+     *
+     * @param target
+     * @param interceptor
+     * @return
+     */
   public static Object wrap(Object target, Interceptor interceptor) {
     Map<Class<?>, Set<Method>> signatureMap = getSignatureMap(interceptor);
     Class<?> type = target.getClass();
@@ -57,6 +66,7 @@ public class Plugin implements InvocationHandler {
   public Object invoke(Object proxy, Method method, Object[] args) throws Throwable {
     try {
       Set<Method> methods = signatureMap.get(method.getDeclaringClass());
+      // Signature 注解支持的【类.方法】会被拦截，不支持的则直接使用反射调用相关方法
       if (methods != null && methods.contains(method)) {
         return interceptor.intercept(new Invocation(target, method, args));
       }
@@ -70,7 +80,7 @@ public class Plugin implements InvocationHandler {
     Intercepts interceptsAnnotation = interceptor.getClass().getAnnotation(Intercepts.class);
     // issue #251
     if (interceptsAnnotation == null) {
-      throw new PluginException("No @Intercepts annotation was found in interceptor " + interceptor.getClass().getName());      
+      throw new PluginException("No @Intercepts annotation was found in interceptor " + interceptor.getClass().getName());
     }
     Signature[] sigs = interceptsAnnotation.value();
     Map<Class<?>, Set<Method>> signatureMap = new HashMap<Class<?>, Set<Method>>();
@@ -90,7 +100,14 @@ public class Plugin implements InvocationHandler {
     return signatureMap;
   }
 
-  private static Class<?>[] getAllInterfaces(Class<?> type, Map<Class<?>, Set<Method>> signatureMap) {
+    /**
+     * 返回 【type 自身实现接口及所有父类实现接口】 与 【拦截方法中接口】的交集
+     *
+     * @param type
+     * @param signatureMap key 没有限制，若 Class 非接口类型，则本方法返回空数组
+     * @return
+     */
+    private static Class<?>[] getAllInterfaces(Class<?> type, Map<Class<?>, Set<Method>> signatureMap) {
     Set<Class<?>> interfaces = new HashSet<Class<?>>();
     while (type != null) {
       for (Class<?> c : type.getInterfaces()) {

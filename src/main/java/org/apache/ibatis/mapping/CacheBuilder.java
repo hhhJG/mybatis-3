@@ -83,12 +83,17 @@ public class CacheBuilder {
     this.blocking = blocking;
     return this;
   }
-  
+
   public CacheBuilder properties(Properties properties) {
     this.properties = properties;
     return this;
   }
 
+    /**
+     * 装饰模式构建缓存链
+     *
+     * @return
+     */
   public Cache build() {
     setDefaultImplementations();
     Cache cache = newBaseCacheInstance(implementation, id);

@@ -23,6 +23,8 @@ import java.lang.annotation.Target;
 
 /**
  * @author Clinton Begin
+ * 根据 type + method，获取查询 sql
+ * 用于逻辑相对复杂 SQL 的生成。
  */
 @Documented
 @Retention(RetentionPolicy.RUNTIME)

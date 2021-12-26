@@ -16,8 +16,11 @@
 package org.apache.ibatis.session;
 
 /**
+ * 一级缓存最大范围是 SqlSession 内部，有多个 SqlSession 或者分布式的环境下，数据库写操作会引起脏数据，建议设定缓存级别为 Statement
+ * 一级缓存内部设计简单 PerpetualCache，没有容量限定，在缓存的功能性上有所欠缺。
  * @author Eduardo Macarron
  */
 public enum LocalCacheScope {
-  SESSION,STATEMENT
+  SESSION, //默认。一个 MyBatis 会话中执行的所有语句，都会共享这一个缓存
+  STATEMENT //缓存只对当前执行的这一个 Statement 有效
 }

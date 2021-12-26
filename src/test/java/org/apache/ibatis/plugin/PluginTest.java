@@ -54,6 +54,11 @@ public class PluginTest {
 
     @Override
     public void setProperties(Properties properties) {
+      if(properties==null){
+
+      }else{
+        properties.put("hhh", "1111");
+      }
     }
   }
 

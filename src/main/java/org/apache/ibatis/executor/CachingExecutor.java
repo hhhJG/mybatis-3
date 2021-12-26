@@ -33,6 +33,10 @@ import org.apache.ibatis.session.RowBounds;
 import org.apache.ibatis.transaction.Transaction;
 
 /**
+ * 二级缓存相对于一级缓存来说，实现了 SqlSession 之间缓存数据的共享，同时粒度更加的细，能够到 namespace 级别，通过 Cache 接口实现类不同的组合，对 Cache 的可控性也更强。
+ * 在多表查询时，极大可能会出现脏数据
+ * 设计上的缺陷，安全使用二级缓存的条件比较苛刻
+ *
  * @author Clinton Begin
  * @author Eduardo Macarron
  */

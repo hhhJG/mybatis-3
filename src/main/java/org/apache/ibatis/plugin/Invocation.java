@@ -19,7 +19,7 @@ import java.lang.reflect.InvocationTargetException;
 import java.lang.reflect.Method;
 
 /**
- * 自定义 invocation，没有使用 jdk 那一套逻辑。
+ * 自定义 invocation，没有使用 jdk InvocationHandler 那一套逻辑。
  * @author Clinton Begin
  */
 public class Invocation {

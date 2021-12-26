@@ -41,8 +41,11 @@ public class TransactionalCache implements Cache {
   private static final Log log = LogFactory.getLog(TransactionalCache.class);
 
   private final Cache delegate;
+  // 提交时清空缓存标识
   private boolean clearOnCommit;
+  // 需要在提交时加入缓存的列表
   private final Map<Object, Object> entriesToAddOnCommit;
+  // 缓存没有命中集合
   private final Set<Object> entriesMissedInCache;
 
   public TransactionalCache(Cache delegate) {
@@ -70,6 +73,7 @@ public class TransactionalCache implements Cache {
       entriesMissedInCache.add(key);
     }
     // issue #146
+    // 由于 clear() 方法没有立即清理缓存，只是设置一个标识位。所以在这里会返回 null
     if (clearOnCommit) {
       return null;
     } else {
@@ -82,6 +86,11 @@ public class TransactionalCache implements Cache {
     return null;
   }
 
+  /**
+   * 不调用 commit 方法的话，由于 TransactionalCache 的作用，并不会对二级缓存造成直接的影响
+   * @param key
+   * @param object
+   */
   @Override
   public void putObject(Object key, Object object) {
     entriesToAddOnCommit.put(key, object);
@@ -94,6 +103,7 @@ public class TransactionalCache implements Cache {
 
   @Override
   public void clear() {
+    // 没有立即执行缓存清除，只是设置一个标识位
     clearOnCommit = true;
     entriesToAddOnCommit.clear();
   }

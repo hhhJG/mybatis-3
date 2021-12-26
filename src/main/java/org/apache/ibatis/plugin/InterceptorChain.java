@@ -26,6 +26,16 @@ public class InterceptorChain {
 
   private final List<Interceptor> interceptors = new ArrayList<Interceptor>();
 
+  /**
+   * 按照实现拦截器的顺序进行插件封装。
+   * 根据 Interceptor 的实现，可能会有不同的效果。
+   * 1. Interceptor 实现丢弃了之前的 target，重新生成一个 target.getClass() 类型的对象
+   * 2. Interceptor 在原先 target 的基础之上，使用 Proxy.newProxyInstance 形成递增式代理
+   * 一般情况下，建议 Interceptor 实现者（加上Intercepts注解，用于确定拦截类型及方法）的 plugin 方法调用 Plugin.wrap(...) 进行包装，逐层进行代理。$Proxy($Proxy($Proxy()))
+   *
+   * @param target
+   * @return
+   */
   public Object pluginAll(Object target) {
     for (Interceptor interceptor : interceptors) {
       target = interceptor.plugin(target);
